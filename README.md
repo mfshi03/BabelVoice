@@ -31,9 +31,10 @@ npm run dev
 ```
 
 If you want to updated the model hosted on Modal. 
-You should edit this:
+You should edit this models/tts_web.py and serve it like this:
+
 ```
-models/tts_web.py
+modal serve models/tts_web.py
 ```
 
 
