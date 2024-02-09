@@ -9,5 +9,32 @@ Voice recordings are not stored and are only used to generate a new wav file tha
 
 ![Babel](Babel.png)
 
+### Development
+
+If you want to develop on this, you should add credentials following .env.example
+
+Additionally,
+
+To run the backend 
+```
+npm install 
+npm run build 
+npm run start
+```
+
+To run the frontend 
+```
+cd client/src
+npm install 
+npm run dev 
+
+```
+
+If you want to updated the model hosted on Modal. 
+You should edit this:
+```
+models/tts_web.py
+```
 
 
+This was heavily inspired by [Quillman](https://github.com/modal-labs/quillman/tree/main) where I learned a lot about how powerful and expressive Modal can be for deploying machine learning applications.
