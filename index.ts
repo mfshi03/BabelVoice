@@ -57,12 +57,12 @@ app.post('/transcribe', upload.single('file'), async (req: Request, res: Respons
         }
         const formData = new FormData();
         const audioStream = fs.createReadStream(audioFile.path);
-        const writeStream = fs.createWriteStream("models/uploads/audio.mp3");
+        const writeStream = fs.createWriteStream("models/uploads/audio.wav");
         audioStream.pipe(writeStream);
         writeStream.on('finish', async () => {
         });
         
-        formData.append('file', audioStream, { filename: 'audio.mp3', contentType: audioFile.mimetype });
+        formData.append('file', audioStream, { filename: 'audio.wav', contentType: audioFile.mimetype });
         formData.append('model', 'whisper-1');
         formData.append('response_format', 'json');
         const config = {
@@ -118,151 +118,22 @@ app.post('/translate', async (req: Request, res: Response) => {
   }
 });
 
-
-app.post('/tts/:voice_id', async (req: Request, res: Response) => {
-    try {
-      const { voice_id } = req.params;
-  
-      const elevenlabs_url = `https://api.elevenlabs.io/v1/text-to-speech/${voice_id}/stream?optimize_streaming_latency=3`;
-  
-      const data = {
-        model_id: req.body.model_id,
-        text: req.body.text,
-        voice_settings: req.body.voice_settings,
-      };
-  
-      const response = await axios.post(elevenlabs_url, data, {
-        headers: {
-          'Content-Type': 'application/json',
-          'xi-api-key': `${process.env.ELEVEN_LABS_KEY}`, 
-        },
-        responseType: "stream",
-      });
-      const filename = 'models/uploads/audio.mp3';
-      const stream = fs.createWriteStream(filename);
-      response.data.pipe(stream);
-
-      stream.on('finish', async () => {
-        const transBlob = new Blob([fs.readFileSync(filename)], { type: 'audio/mp3' });
-        const arrayBuffer = await transBlob.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-
-        const params = {
-          Bucket: `${process.env.S3_BUCKET}`,
-          Key: filename,
-          Body: buffer,
-          ContentType: 'audio/mp3',
-          ACL: 'public-read',
-        };
-        
-        s3.upload(params, (err:any, data:any) => {
-          if (err) {
-            console.log('Error', err);
-          }
-          if (data) {
-            const transURL = s3.getSignedUrl('getObject', {
-              Bucket: process.env.S3_BUCKET,
-              Key: filename,
-              Expires: 60,
-            });
-            res.json({ transcriptURL: transURL });
-          }
-        }); 
-
-      });
-      stream.on('error', (error) => {
-        console.error('Error writing file:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-      }); 
-    } catch (error:any) {
-      console.error('Error:', error.message);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
-
-app.post('/tts2', async (req: Request, res: Response) => {
+app.post('/clone', async (req: Request, res: Response) => {
   const data = { 
     text: req.body.text,
     language: req.body.language,
-    path: 'uploads/audio.mp3',
-  }
-  
-  try {
-    const response = await fetch("https://mfshi03--tts-web-py-speak-dev.modal.run", {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: { "Content-Type": "application/json" },
-    });
-    
-    if (!response.ok) {
-      console.error("Error occurred during submission: " + response.status);
-    }
-    
-    const res_stream = response.body
-    
-    const filename = 'models/uploads/new_audio.mp3';
-    const stream = fs.createWriteStream(filename);
-    if (res_stream) {
-      const reader = res_stream.getReader();
-      write_audio(reader, stream);
-    }
-
-    stream.on('finish', async () => {
-      const transBlob = new Blob([fs.readFileSync(filename)], { type: 'audio/mp3' });
-      const arrayBuffer = await transBlob.arrayBuffer();
-      console.log(arrayBuffer.byteLength);
-      const buffer = Buffer.from(arrayBuffer);
-
-      const params = {
-        Bucket: `${process.env.S3_BUCKET}`,
-        Key: filename,
-        Body: buffer,
-        ContentType: 'audio/mp3',
-        ACL: 'public-read',
-      };
-      
-      s3.upload(params, (err:any, data:any) => {
-        if (err) {
-          console.log('Error', err);
-        }
-        if (data) {
-          const transURL = s3.getSignedUrl('getObject', {
-            Bucket: process.env.S3_BUCKET,
-            Key: filename,
-            Expires: 120,
-          });
-          res.json({ transcriptURL: transURL });
-        }
-      }); 
-
-    });
-    stream.on('error', (error) => {
-      console.error('Error writing file:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }); 
-  } catch (error:any) {
-    console.error('Error:', error.message);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-
-app.post('/tts2_parallel', async (req: Request, res: Response) => {
-  const data = { 
-    text: req.body.text,
-    language: req.body.language,
-    path: 'uploads/audio.mp3',
+    path: 'uploads/audio.wav',
   }
   try {
     if (req.body.noop) {
-      await fetch("https://mfshi03--tts-web-parallel-py-web-dev.modal.run/generate", {
+      await fetch("/generate", {
         method: "POST",
         body: JSON.stringify({"noop": true}),
         headers: { "Content-Type": "application/json" },
       });
       return;
     }
-    const filename = 'models/uploads/new_audio.mp3';
+    const filename = 'models/uploads/new_audio.wav';
     const arrayBuffer = await fetchGeneration(data) || new ArrayBuffer(0);
     console.log("Array Buffer byte length", arrayBuffer.byteLength);
     const buffer = Buffer.from(arrayBuffer);
@@ -271,7 +142,7 @@ app.post('/tts2_parallel', async (req: Request, res: Response) => {
       Bucket: `${process.env.S3_BUCKET}`,
       Key: filename,
       Body: buffer,
-      ContentType: 'audio/mp3',
+      ContentType: 'audio/wav',
       ACL: 'public-read',
     };
       

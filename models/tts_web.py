@@ -54,7 +54,7 @@ class VoiceCloner:
         if not text:
             return
 
-        wav = self.tts.tts(text=text, speaker_wav=os.path.join(volume_path, "audio.mp3"), language=language)
+        wav = self.tts.tts(text=text, speaker_wav=os.path.join(volume_path, "audio.wav"), language=language)
 
         def postprocess(wav):
             """Post process the output waveform"""
@@ -90,8 +90,8 @@ def web():
     tts = VoiceCloner()
 
     def write_audio():
-        path = "/remote/audio.mp3"
-        fp = os.path.join(volume_path, "audio.mp3")
+        path = "/remote/audio.wav"
+        fp = os.path.join(volume_path, "audio.wav")
         with open(path, 'rb') as src:
             with open(fp, 'wb') as dest:
                 size = 1024 * 1024  
@@ -150,6 +150,6 @@ def web():
         if result is None:
             return Response(status_code=204)
 
-        return Response(result, media_type="audio/mp3")
+        return Response(result, media_type="audio/wav")
     
     return web_app

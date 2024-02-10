@@ -3,7 +3,7 @@ import axios from 'axios';
 export const transcribe = async (url:string, language:string) => {
     const file = await fetch(url).then((r) => r.blob());
     const formData = new FormData();
-    formData.append('file', file, 'audio.mp3');
+    formData.append('file', file, 'audio.wav');
 
     const headers = {
       'Content-Type': 'multipart/form-data',
