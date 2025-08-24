@@ -15,13 +15,11 @@ export const transcribe = async (url: string, language: string) => {
     });
 
     const transcription = response.data.transcription;
-    if (language === "en") {
-      return { translation: transcription, transcription: transcription };
-    }
 
     const headers2 = {
       "Content-Type": "application/json",
     };
+
     const response2 = await axios.post(`/translate`, {
       headers2,
       transcription,
@@ -33,6 +31,6 @@ export const transcribe = async (url: string, language: string) => {
       transcription: transcription,
     };
   } catch (error) {
-    throw new Error(`Failed to transcribe audio ${error}`);
+    throw new Error(`Failed to transcribe audio: ${error}`);
   }
 };

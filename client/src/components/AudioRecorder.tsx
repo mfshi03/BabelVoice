@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 
 import { transcribe } from "../api/transcribe";
-import { tts2 } from "../api/tts";
+import { tts } from "../api/tts";
 import AudioPlayer from "./AudioPlayer";
 import Dropdown from "./Dropdown";
 import PlayButton from "./PlayButton";
@@ -39,7 +39,7 @@ const AudioRecorder = () => {
         return;
       }
 
-      const transURL = await tts2(translation, languageCode);
+      const transURL = await tts(translation, languageCode);
       console.log(transURL);
       setIsTranslating(false);
       setTranscriptURL(transURL.toString());
