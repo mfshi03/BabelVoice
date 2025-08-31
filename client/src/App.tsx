@@ -1,19 +1,9 @@
-import { useEffect } from "react";
-
 import "./App.css";
-import { warm_gpu } from "./api/tts";
 import babel from "./assets/babel.svg";
 import AudioRecorder from "./components/AudioRecorder";
 
 function App() {
-  async function onMount() {
-    await warm_gpu();
-  }
-
-  useEffect(() => {
-    onMount();
-  }, []);
-
+  
   return (
     <>
       <div className="flex flex-col items-center justify-center">
@@ -29,7 +19,7 @@ function App() {
         <AudioRecorder />
       </div>
 
-      <p className="read-the-docs">Translate Anything. Anywhere</p>
+      <p className="read-the-docs">Real-time voice-to-voice translation</p>
     </>
   );
 }

@@ -1,0 +1,45 @@
+export const translationCodes: Record<string, string> = {
+  arabic: "arb",
+  bengali: "ben",
+  catalan: "cat",
+  czech: "ces",
+  chinese: "cmn",
+  welsh: "cym",
+  danish: "dan",
+  german: "deu",
+  english: "eng",
+  estonian: "est",
+  french: "fra",
+  hindi: "hin",
+  indonesian: "ind",
+  italian: "ita",
+  japanese: "jpn",
+  korean: "kor",
+  dutch: "nld",
+  polish: "pol",
+  portuguese: "por",
+  romanian: "ron",
+  russian: "rus",
+  slovak: "slk",
+  spanish: "spa",
+  swedish: "swe",
+  telugu: "tel",
+  thai: "tha",
+  turkish: "tur",
+  ukrainian: "ukr",
+  urdu: "urd",
+  uzbek: "uzn",
+  vietnamese: "vie"
+};
+
+// ['en', 'es', 'fr', 'de', 'it', 'pt', 'pl', 'tr', 'ru', 'nl', 'cs', 'ar', 'zh-cn', 'hu', 'ko', 'ja', 'hi']
+export const cloningCodes: Record<string, string> = {
+    english: "en",
+    spanish: "es",
+    french: "fr",
+    german: "de",
+    chinese: "zh-cn",
+    japanese: "ja",
+    korean: "ko",
+};
+

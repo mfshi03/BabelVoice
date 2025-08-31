@@ -1,29 +1,25 @@
 import axios from "axios";
+import { BACKEND_URL } from "../config";
 
-export const warm_gpu = async () => {
-  try {
-    const data = {
-      noop: true,
-    };
-    await axios.post(`/clone`, data);
-    return;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to warm up GPU");
-  }
-};
-
-export const tts = async (text: string, lang: string) => {
-  const data = {
-    text: text,
-    language: lang,
-    noop: false,
-  };
+export const tts = async (url: string, text: string, lang: string) => {
+  const file = await fetch(url).then((r) => r.blob());
+  const formData = new FormData();
+  formData.append("file", file, "audio.wav"); 
+  formData.append("options", JSON.stringify({ content: text, lang }));
 
   try {
-    const response = await axios.post(`/clone`, data);
-    return response.data.transcriptURL;
+    const response = await axios.post(`${BACKEND_URL}/clone`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      responseType: "blob", 
+    });
+
+    const audioBlob = response.data;
+    const audioUrl = URL.createObjectURL(audioBlob);
+
+    return audioUrl; 
   } catch (error) {
-    throw new Error(`Failed to transcribe audio ${error}`);
+    throw new Error(`Failed to return audio: ${error}`);
   }
 };
